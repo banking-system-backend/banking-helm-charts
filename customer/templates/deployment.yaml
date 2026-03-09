@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "customer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "customer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "customer.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.initContainers.waitForConfigServer .Values.initContainers.waitForDiscovery }}
+      initContainers:
+        {{- if .Values.initContainers.waitForConfigServer }}
+        - name: wait-for-config-server
+          image: busybox:1.36
+          command: ['sh', '-c', 'until nc -z config-server 8888; do echo waiting for config-server; sleep 2; done;']
+        {{- end }}
+        {{- if .Values.initContainers.waitForDiscovery }}
+        - name: wait-for-discovery
+          image: busybox:1.36
+          command: ['sh', '-c', 'until nc -z discovery-server 8761; do echo waiting for discovery-server; sleep 2; done;']
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: "{{ .Values.config.serverUrl }}"
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:{{ .Values.config.serverUrl }}"
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: "{{ .Values.eureka.url }}"
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: "{{ .Values.service.name }}"
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "false"
+            - name: DB_HOST
+              value: "{{ .Values.database.host }}"
+            - name: DB_PORT
+              value: "{{ .Values.database.port }}"
+            - name: DB_NAME
+              value: "{{ .Values.database.name }}"
+            - name: DB_USERNAME
+              value: "{{ .Values.database.username }}"
+            - name: DB_PASSWORD
+              value: "{{ .Values.database.password }}"
+            - name: JAVA_OPTS
+              value: "{{ .Values.env.javaOpts }}"
+            {{- range .Values.extraEnv }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

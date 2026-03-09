@@ -1,0 +1,44 @@
+replicaCount: 1
+
+image:
+  repository: abayisenga/account-service
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: regcred
+
+service:
+  name: customer-account
+  type: ClusterIP
+  port: 8060
+
+config:
+  serverUrl: "http://config-server:8888"
+
+eureka:
+  url: "http://discovery-server:8761/eureka/"
+
+database:
+  host: "postgres"
+  port: "5432"
+  name: "accounts"
+  username: "postgres"
+  password: "Password123!"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "250m"
+
+env:
+  javaOpts: "-Xms128m -Xmx256m"
+
+initContainers:
+  waitForConfigServer: true
+  waitForDiscovery: true
+
+extraEnv: []

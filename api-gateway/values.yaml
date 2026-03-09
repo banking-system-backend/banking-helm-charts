@@ -1,0 +1,54 @@
+replicaCount: 2
+
+image:
+  repository: abayisenga/api-gateway
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: regcred
+
+service:
+  name: api-gateway
+  type: ClusterIP
+  port: 8866
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: csr-labs.duckdns.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: api-gateway-tls
+      hosts:
+        - csr-labs.duckdns.org
+
+config:
+  serverUrl: "http://config-server:8888"
+
+eureka:
+  url: "http://discovery-server:8761/eureka/"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "250m"
+
+env:
+  javaOpts: "-Xms128m -Xmx256m"
+
+initContainers:
+  waitForDiscovery: true
+  waitForConfigServer: false
+
+extraEnv: []
