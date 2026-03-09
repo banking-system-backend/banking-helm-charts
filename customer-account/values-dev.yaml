@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: abayisenga/account-service
+  repository: abayisenga/customer-account
   tag: "b347d81"
 
 database:
