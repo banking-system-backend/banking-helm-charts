@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: abayisenga/customer-service
+  repository: abayisenga/banking-customer-service
   tag: "latest"
   pullPolicy: IfNotPresent
 

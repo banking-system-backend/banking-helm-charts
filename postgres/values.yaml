@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: postgres
+  tag: "16-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  name: postgres
+  type: ClusterIP
+  port: 5432
+
+auth:
+  username: postgres
+  password: Password123!
+  primaryDatabase: customer
+  extraDatabases:
+    - accounts
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "250m"
+
+storage:
+  enabled: false
+  size: 1Gi
+  storageClassName: ""
+

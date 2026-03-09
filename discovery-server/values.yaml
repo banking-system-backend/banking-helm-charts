@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: abayisenga/discovery-server
+  repository: abayisenga/banking-discovery-server
   tag: "latest"
   pullPolicy: IfNotPresent
 

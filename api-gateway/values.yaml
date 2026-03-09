@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: abayisenga/api-gateway
+  repository: abayisenga/banking-api-gateway
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -21,14 +21,14 @@ ingress:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
-    - host: csr-labs.duckdns.org
+    - host: banking-system.duckdns.org
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: api-gateway-tls
       hosts:
-        - csr-labs.duckdns.org
+        - banking-system.duckdns.org
 
 config:
   serverUrl: "http://config-server:8888"
