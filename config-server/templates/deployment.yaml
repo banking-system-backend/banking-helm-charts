@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: {{ .Values.service.name }}
   namespace: {{ .Release.Namespace }}
@@ -7,6 +7,15 @@ metadata:
     {{- include "config-server.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 3
+  strategy:
+    blueGreen:
+      activeService: {{ .Values.service.name }}
+      previewService: {{ .Values.service.name }}-preview
+      autoPromotionEnabled: {{ .Values.blueGreen.autoPromotionEnabled }}
+      {{- if .Values.blueGreen.scaleDownDelaySeconds }}
+      scaleDownDelaySeconds: {{ .Values.blueGreen.scaleDownDelaySeconds }}
+      {{- end }}
   selector:
     matchLabels:
       {{- include "config-server.selectorLabels" . | nindent 6 }}

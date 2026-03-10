@@ -24,4 +24,8 @@ resources:
 env:
   javaOpts: "-Xms128m -Xmx256m"
 
+blueGreen:
+  autoPromotionEnabled: false
+  scaleDownDelaySeconds: 30
+
 extraEnv: []

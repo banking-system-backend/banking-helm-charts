@@ -41,4 +41,8 @@ initContainers:
   waitForConfigServer: true
   waitForDiscovery: true
 
+blueGreen:
+  autoPromotionEnabled: false
+  scaleDownDelaySeconds: 30
+
 extraEnv: []

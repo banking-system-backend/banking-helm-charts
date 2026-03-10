@@ -30,4 +30,8 @@ env:
 initContainers:
   waitForConfigServer: true
 
+blueGreen:
+  autoPromotionEnabled: false
+  scaleDownDelaySeconds: 30
+
 extraEnv: []
