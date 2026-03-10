@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: abayisenga/banking-customer-service
-  tag: "2b84e4d"
+  tag: "97b262f"
 
 database:
   host: "postgres"
